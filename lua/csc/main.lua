@@ -1,6 +1,3 @@
-
-local json = require('csc.json')
-
 local M = {}
 
 local find = function(tabl, str)
@@ -12,34 +9,32 @@ local find = function(tabl, str)
     return nil
 end
 
-local get_table_ind = function(table_obj)
-    local current_colorscheme = vim.g.colors_name
-    local index = find(table_obj, current_colorscheme) or 0
+local prepare_data = function()
+    local config = require('csc.config')
 
-    return {colorscheme=current_colorscheme, index=index, schemes=table_obj}
+    local table_obj = config.schemes
+
+    local curr_index = find(table_obj, vim.g.colors_name) or 0
+    local n = table.getn(table_obj)
+
+    return {curr=curr_index, n=n, tabl=table_obj}
 end
 
-local table_obj = json.decode('["gruvbox", "base16-tomorrow-night"]')
+local change_schema = function (name)
+    vim.cmd('silent colorscheme ' .. name)
+    print("current colorscheme is " .. name)
+end
 
 function M.next()
-    local obj = get_table_ind(table_obj)
-    local curr = obj.index
-    local tabl = obj.schemes
-
-    local n = table.getn(tabl)
-    local next_ind = (curr%n) + 1
-    vim.cmd('silent colorscheme ' .. tabl[next_ind])
-    print("current colorscheme is " .. tabl[next_ind])
+    local data = prepare_data()
+    local next_ind = (data.curr%data.n) + 1
+    change_schema(data.tabl[next_ind])
 end
 
 function M.prev()
-    local obj = get_table_ind(table_obj)
-    local tabl = obj.colorscheme
-    local curr = obj.index
-
-    local n = table.getn(tabl)
-    local prev_ind = ((curr - 1 + n)%n) + 1
-    vim.cmd('silent colorscheme ' .. tabl[prev_ind])
+    local data = prepare_data()
+    local prev_ind = ((data.curr - 2 + data.n)%data.n) + 1
+    change_schema(data.tabl[prev_ind])
 end
 
 return M
