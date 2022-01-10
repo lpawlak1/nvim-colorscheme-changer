@@ -14,6 +14,7 @@ And You are done
 ## Prerequisites
 
 - nvim 0.5+
+- telescope.nvim (optionally)
 
 ## Installation
 
@@ -30,6 +31,11 @@ Personally I use vim-plug and instructions are shown below.
 call plug#begin()
   Plug 'lpawlak1/nvim-colorscheme-changer'
 call plug#end()
+lua << EOF
+require('csc.config').config({
+    schemes = {'gruvbox', 'default', 'base16-tomorrow-night'}
+})
+EOF
 ```
 3. Restart nvim/`:source $MYVIMRC`, and run the `:PlugInstall` to install your plugins.
 
@@ -37,20 +43,35 @@ call plug#end()
 
 ## Setup
 
-All setup for this plugin are stored in (based on root of project) in `lua/csc/config.lua`
+Basic config can look like this
+```lua
+require('csc.config').config({
+    schemes = {'gruvbox', 'default', 'base16-tomorrow-night'},
+    maps = {
+        next={
+          map='<leader>cl'
+        },
+        prev={
+          map='<leader>ch'
+        },
+        telescope={
+          map='<leader>cf'
+        }
+    }
+})
+```
 
-From there default mappings can be unmapped as well as new themes added
-
-## Usage
-
-At the moment its just basic scrolling through saved colorschemes
+Optionally you can add telescope options in `telescope` section in `maps`
+with key `telescope_opts`
 
 ### Next theme
 
 ```vim
-:lua require('csc.main').next()
+:CscNext
 ```
+
 Or following defaults mapping
+
 ```vim
 <leader>cl
 ```
@@ -58,9 +79,23 @@ Or following defaults mapping
 ### Previous theme
 
 ```vim
-:lua require('csc.main').prev()
+:CscPrev
 ```
+
 Or following defaults mapping
+
 ```vim
 <leader>ch
+```
+
+### (telescope required) search your theme
+
+```vim
+:CscTelescope
+```
+
+Or following defaults mapping
+
+```vim
+<leader>cf
 ```
